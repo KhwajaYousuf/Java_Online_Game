@@ -152,7 +152,7 @@ public class Maze extends JFrame {
         // Final scroll image below player4 with a larger size
         int finalScrollX = playerX; // Align X with players
         int finalScrollY = player4Y + 40; // Position below player4 with some space
-        g.drawImage(finalScrollImage, finalScrollX, finalScrollY, 150, 150, this); // Draw final scroll image (larger size)
+        g.drawImage(finalScrollImage, finalScrollX, finalScrollY, 300, 250, this); // Draw final scroll image (larger width and height)
 
         // Drawing rotate, settings, and scroll charge icons and fonts
         int iconX = (getWidth() - (CELL_SIZE * GRID_SIZE)) + 150; // X position for icons
@@ -174,18 +174,15 @@ public class Maze extends JFrame {
 
         // Scroll charge icon and font right next to settings
         int scrollChargeIconX = settingsIconX + 90; // Move scroll charge further right
-        int scrollChargeIconY = settingsIconY; // Align with settings Y position
-        int scrollChargeFontY = settingsFontY; // Align font Y position with icon
+        int scrollChargeIconY = settingsIconY; // Align Y with settings icon
 
         g.drawImage(scrollChargeIcon, scrollChargeIconX, scrollChargeIconY, 60, 60, this); // Draw scroll charge icon
-        g.drawImage(scrollChargeFont, scrollChargeIconX, scrollChargeFontY, 80, 40, this); // Draw scroll charge font (larger size)
+        g.drawImage(scrollChargeFont, scrollChargeIconX, scrollChargeIconY + 60, 50, 30, this); // Draw scroll charge font below scroll charge icon
     }
 
     private void drawGrid(Graphics g) {
-        g.setColor(Color.BLACK);
-
-        int startX = (getWidth() - (GRID_SIZE * CELL_SIZE)) / 2;
-        int startY = (getHeight() - (GRID_SIZE * CELL_SIZE)) / 2;
+        int startX = (getWidth() - (CELL_SIZE * GRID_SIZE)) / 2; // Center the grid
+        int startY = (getHeight() - (CELL_SIZE * GRID_SIZE)) / 2; // Center the grid
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
