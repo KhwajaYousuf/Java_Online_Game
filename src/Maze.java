@@ -13,6 +13,11 @@ public class Maze extends JFrame {
     private Image gameLogo;
     private Image lostMazeImage;
     private Image gameStatsFont;
+    private Image player1Font;
+    private Image player2Font;
+    private Image player3Font;
+    private Image player4Font;
+    private Image finalScrollImage; // Changed from scroll1Image to finalScrollImage
     private static final int GRID_SIZE = 7;
     private static final int CELL_SIZE = 70;
     private JPanel[][] gridCells;
@@ -29,6 +34,8 @@ public class Maze extends JFrame {
         loadGameLogo(); 
         loadLostMazeImage(); 
         loadGameStatsFont(); 
+        loadPlayerFonts(); // Load player images
+        loadFinalScrollImage(); // Load final_scroll image
         createGrid();  
         setVisible(true);
     }
@@ -81,6 +88,17 @@ public class Maze extends JFrame {
         gameStatsFont = new ImageIcon(getClass().getResource("/naruto_assets/game_stats_font.png")).getImage();
     }
 
+    private void loadPlayerFonts() {
+        player1Font = new ImageIcon(getClass().getResource("/naruto_assets/player1_font.png")).getImage();
+        player2Font = new ImageIcon(getClass().getResource("/naruto_assets/player2_font.png")).getImage();
+        player3Font = new ImageIcon(getClass().getResource("/naruto_assets/player3_font.png")).getImage();
+        player4Font = new ImageIcon(getClass().getResource("/naruto_assets/player4_font.png")).getImage();
+    }
+
+    private void loadFinalScrollImage() {
+        finalScrollImage = new ImageIcon(getClass().getResource("/naruto_assets/final_scroll.png")).getImage(); // Load final_scroll image
+    }
+
     private void createGrid() {
         gridCells = new JPanel[GRID_SIZE][GRID_SIZE];
         JPanel mazePanel = new JPanel();
@@ -119,6 +137,23 @@ public class Maze extends JFrame {
         int gameStatsY = logoY + 110; // Position right below the game logo
         g.drawImage(gameStatsFont, gameStatsX, gameStatsY, 150, 50, this); // Draw game stats font
 
+        // Players fonts below game stats font with added spacing
+        int playerX = logoX; // Align X with game logo
+        int player1Y = gameStatsY + 60; // Position player1 right below game stats
+        int player2Y = player1Y + 60; // Position player2 below player1 with additional spacing
+        int player3Y = player2Y + 60; // Position player3 below player2 with additional spacing
+        int player4Y = player3Y + 60; // Position player4 below player3 with additional spacing
+
+        g.drawImage(player1Font, playerX, player1Y, 150, 30, this); // Draw player1 font
+        g.drawImage(player2Font, playerX, player2Y, 150, 30, this); // Draw player2 font
+        g.drawImage(player3Font, playerX, player3Y, 150, 30, this); // Draw player3 font
+        g.drawImage(player4Font, playerX, player4Y, 150, 30, this); // Draw player4 font
+
+        // Final scroll image below player4 with a larger size
+        int finalScrollX = playerX; // Align X with players
+        int finalScrollY = player4Y + 40; // Position below player4 with some space
+        g.drawImage(finalScrollImage, finalScrollX, finalScrollY, 150, 150, this); // Draw final scroll image (larger size)
+
         // Drawing rotate, settings, and scroll charge icons and fonts
         int iconX = (getWidth() - (CELL_SIZE * GRID_SIZE)) + 150; // X position for icons
         int rotateIconY = (getHeight() - (CELL_SIZE * GRID_SIZE)) / 2; // Y position for rotate icon
@@ -154,14 +189,12 @@ public class Maze extends JFrame {
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
-                int x = startX + (col * CELL_SIZE);
-                int y = startY + (row * CELL_SIZE);
-                g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+                g.drawRect(startX + col * CELL_SIZE, startY + row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Maze::new);
+        SwingUtilities.invokeLater(() -> new Maze());
     }
 }
