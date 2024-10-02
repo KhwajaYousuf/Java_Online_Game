@@ -12,6 +12,7 @@ public class Maze extends JFrame {
     private Image scrollChargeFont;
     private Image gameLogo;
     private Image lostMazeImage;
+    private Image gameStatsFont;
     private static final int GRID_SIZE = 7;
     private static final int CELL_SIZE = 70;
     private JPanel[][] gridCells;
@@ -27,6 +28,7 @@ public class Maze extends JFrame {
         loadScrollChargeFont(); 
         loadGameLogo(); 
         loadLostMazeImage(); 
+        loadGameStatsFont(); 
         createGrid();  
         setVisible(true);
     }
@@ -75,6 +77,10 @@ public class Maze extends JFrame {
         lostMazeImage = new ImageIcon(getClass().getResource("/naruto_assets/lost_maze.png")).getImage();
     }
 
+    private void loadGameStatsFont() {
+        gameStatsFont = new ImageIcon(getClass().getResource("/naruto_assets/game_stats_font.png")).getImage();
+    }
+
     private void createGrid() {
         gridCells = new JPanel[GRID_SIZE][GRID_SIZE];
         JPanel mazePanel = new JPanel();
@@ -107,6 +113,11 @@ public class Maze extends JFrame {
         int lostMazeX = logoX + 110; // X position for lost maze next to logo
         int lostMazeY = logoY + 40; // Lower the Y position for lost maze
         g.drawImage(lostMazeImage, lostMazeX, lostMazeY, 145, 25, this); // Draw lost maze image (reduced size)
+
+        // Game stats font below game logo
+        int gameStatsX = logoX; // Align X with game logo
+        int gameStatsY = logoY + 110; // Position right below the game logo
+        g.drawImage(gameStatsFont, gameStatsX, gameStatsY, 150, 50, this); // Draw game stats font
 
         // Drawing rotate, settings, and scroll charge icons and fonts
         int iconX = (getWidth() - (CELL_SIZE * GRID_SIZE)) + 150; // X position for icons
