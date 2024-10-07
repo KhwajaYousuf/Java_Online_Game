@@ -14,7 +14,6 @@ public class Maze extends JFrame {
     private Image scrollsFont; 
     private Image secretFont; 
     private Image collectedFont; 
-    private Image buttonImage;
 
     private static final int GRID_SIZE = 9;
     private static final int CELL_SIZE = 60;
@@ -46,8 +45,8 @@ public class Maze extends JFrame {
         // Create a JPanel for the grid
         JPanel gridPanel = createGridPanel();
         
-        // Create a JPanel for buttons
-        JPanel buttonPanel = createButtonPanel();
+        // Add chat area panel to the right side
+        JPanel chatAreaPanel = createChatAreaPanel();
         
         // Add grid panel to background panel with adjusted constraints
         GridBagConstraints gbc = new GridBagConstraints();
@@ -55,22 +54,25 @@ public class Maze extends JFrame {
         gbc.gridy = 0; 
         gbc.weightx = 1.0; 
         gbc.weighty = 1.0; 
-        gbc.anchor = GridBagConstraints.CENTER; 
-        gbc.insets = new Insets(50, 0, 0, 0); // Add top padding to move the grid down
+        gbc.anchor = GridBagConstraints.LINE_END; 
+        gbc.insets = new Insets(-50, 0, 0, 50); // Add top padding to move the grid down
         backgroundPanel.add(gridPanel, gbc);
-
-     // Add button panel below the grid panel with negative insets to move it upwards
-        gbc.gridy = 1; // Move to the next row for buttons
-        gbc.insets = new Insets(-150, 0, 0, 0); // Move buttons upwards by 150 pixels
-        backgroundPanel.add(buttonPanel, gbc);
-
         
+        // Now add the chat area panel to the background panel
+        gbc.gridx = 1; // Change this if you want to place the chat area differently
+        gbc.gridy = 0; 
+        gbc.weightx = 0; 
+        gbc.weighty = 1.0; 
+        gbc.anchor = GridBagConstraints.NORTH; 
+        backgroundPanel.add(chatAreaPanel, gbc);
+
         add(backgroundPanel, BorderLayout.CENTER);
         
         setJMenuBar(createMenuBar());
         pack(); 
         setVisible(true);
     }
+
 
     private void setupFrame() {
         setTitle("Wizard's Maze");
@@ -127,30 +129,36 @@ public class Maze extends JFrame {
     }
 
 
+    private JPanel createChatAreaPanel() {
+        JPanel chatPanel = new JPanel(new BorderLayout());
+        chatPanel.setPreferredSize(new Dimension(300, 600)); // Increased width of the chatbox
+        chatPanel.setBorder(BorderFactory.createTitledBorder("Chatbox"));
 
+        JTextArea chatArea = new JTextArea();
+        chatArea.setEditable(false); // Chat area is read-only
+        chatArea.setLineWrap(true);
+        chatArea.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(chatArea);
+        scrollPane.setPreferredSize(new Dimension(300, 500)); // Set preferred size for the scroll pane
 
+        JTextField chatInput = new JTextField();
+        chatInput.addActionListener(e -> {
+            String message = chatInput.getText();
+            if (!message.isEmpty()) {
+                chatArea.append("Player: " + message + "\n");
+                chatInput.setText(""); // Clear the input field
+            }
+        });
 
+        chatPanel.add(scrollPane, BorderLayout.CENTER);
+        chatPanel.add(chatInput, BorderLayout.SOUTH);
 
-    private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setOpaque(false);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0; // Row position for all buttons
-        gbc.insets = new Insets(0, 25, 0, 25); // More space between buttons
-
-        // Create buttons in a loop to reduce redundancy
-        for (int i = 0; i < 3; i++) {
-            JButton button = new JButton(new ImageIcon(getClass().getResource("/naruto_assets/insert_up.png")));
-            button.setPreferredSize(new Dimension(70, 30));
-            button.addActionListener(e -> System.out.println("Button clicked"));
-            
-            gbc.gridx = i; // Column position for each button
-            buttonPanel.add(button, gbc);
-        }
-
-        return buttonPanel;
+        return chatPanel;
     }
+
+
+
+
 
 
 
@@ -183,7 +191,6 @@ public class Maze extends JFrame {
         scrollsFont = new ImageIcon(getClass().getResource("/naruto_assets/scrolls_font.png")).getImage();
         secretFont = new ImageIcon(getClass().getResource("/naruto_assets/secret_font.png")).getImage();
         collectedFont = new ImageIcon(getClass().getResource("/naruto_assets/collected_font.png")).getImage();
-        buttonImage = new ImageIcon(getClass().getResource("/naruto_assets/insert_up.png")).getImage();
     }
 
     private class BackgroundPanel extends JPanel {
