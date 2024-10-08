@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class Maze extends JFrame {
@@ -42,28 +40,27 @@ public class Maze extends JFrame {
         backgroundPanel.setLayout(new GridBagLayout()); 
         backgroundPanel.setPreferredSize(new Dimension(1920, 1080)); 
         
-        // Create a JPanel for the grid
+        // Creating a JPanel for the grid
         JPanel gridPanel = createGridPanel();
         
-        // Add chat area panel to the right side
+        // Adding chat area panel to the right side
         JPanel chatAreaPanel = createChatAreaPanel();
         
-        // Add grid panel to background panel with adjusted constraints
+        // Adding grid panel to background panel with adjusted constraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; 
         gbc.gridy = 0; 
         gbc.weightx = 1.0; 
         gbc.weighty = 1.0; 
         gbc.anchor = GridBagConstraints.LINE_END; 
-        gbc.insets = new Insets(-50, 0, 0, 50); // Add top padding to move the grid down
+        gbc.insets = new Insets(-50, 0, 0, 50); 
         backgroundPanel.add(gridPanel, gbc);
         
-        // Now add the chat area panel to the background panel
-        gbc.gridx = 1; // Change this if you want to place the chat area differently
+        gbc.gridx = 1; 
         gbc.gridy = 0; 
         gbc.weightx = 0; 
         gbc.weighty = 1.0; 
-        gbc.anchor = GridBagConstraints.NORTH; 
+        gbc.anchor = GridBagConstraints.CENTER; 
         backgroundPanel.add(chatAreaPanel, gbc);
 
         add(backgroundPanel, BorderLayout.CENTER);
