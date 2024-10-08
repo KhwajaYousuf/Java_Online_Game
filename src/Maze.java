@@ -216,6 +216,8 @@ public class Maze extends JFrame {
                             }
                         }
                     }
+                    
+                    		
                 }
 
                 gridPanel.add(cellButton);
@@ -287,10 +289,12 @@ public class Maze extends JFrame {
         JMenu fileMenu2 = new JMenu("Change Language");
         JMenu fileMenu3 = new JMenu("Network");
         JMenu fileMenu4 = new JMenu("Help");
+        JMenu fileMenu5 = new JMenu("INSERT TILE");
         menuBar.add(fileMenu1);
         menuBar.add(fileMenu2);
         menuBar.add(fileMenu3);
         menuBar.add(fileMenu4);
+        menuBar.add(fileMenu5);
         return menuBar;
     }
 
