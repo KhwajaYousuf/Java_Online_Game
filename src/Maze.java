@@ -20,6 +20,7 @@ public class Maze extends JFrame {
     private JTextField player2TextField;
     private JTextField player3TextField;
     private JTextField player4TextField;
+    private final ImageIcon[] coinImages = new ImageIcon[20];
 
     private final String[] tileImages = {
         "brick_SE.png",
@@ -79,7 +80,10 @@ public class Maze extends JFrame {
 
     private JPanel createGridPanel() {
         JPanel gridPanel = new JPanel(new GridLayout(GRID_SIZE, GRID_SIZE));
+        int[] coinNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+                             11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25};
         Random random = new Random();
+        int coinIndex = 0; // To index through the coinNumbers array
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -87,13 +91,12 @@ public class Maze extends JFrame {
                 cellButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 cellButton.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
 
-                // Check if we are on the outer layer
-                if ((row == 0 && (col == 0 || col == GRID_SIZE - 1)) || // Top-left and top-right corner
-                    (row == GRID_SIZE - 1 && (col == 0 || col == GRID_SIZE - 1))) { // Bottom-left and bottom-right corner
+                if ((row == 0 && (col == 0 || col == GRID_SIZE - 1)) || 
+                    (row == GRID_SIZE - 1 && (col == 0 || col == GRID_SIZE - 1))) { 
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                     cellButton.setIcon(tileIcon);
-
-                } else if (row == 0) { // Top edge
+                    
+                } else if (row == 0) { 
                     if (col == 0 || col == 1 || col == 3 || col == 5 || col == 7 || col == 8) {
                         ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                         cellButton.setIcon(tileIcon);
@@ -102,7 +105,7 @@ public class Maze extends JFrame {
                         cellButton.setIcon(tileIcon);
                     }
 
-                } else if (row == GRID_SIZE - 1) { // Bottom edge
+                } else if (row == GRID_SIZE - 1) { 
                     if (col == 0 || col == 1 || col == 3 || col == 5 || col == 7 || col == 8) {
                         ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                         cellButton.setIcon(tileIcon);
@@ -111,7 +114,7 @@ public class Maze extends JFrame {
                         cellButton.setIcon(tileIcon);
                     }
 
-                } else if (col == 0) { // Left edge
+                } else if (col == 0) {
                     if (row == 0 || row == 1 || row == 3 || row == 5 || row == 7 || row == 8) {
                         ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                         cellButton.setIcon(tileIcon);
@@ -120,7 +123,7 @@ public class Maze extends JFrame {
                         cellButton.setIcon(tileIcon);
                     }
 
-                } else if (col == GRID_SIZE - 1) { // Right edge
+                } else if (col == GRID_SIZE - 1) { 
                     if (row == 0 || row == 1 || row == 3 || row == 5 || row == 7 || row == 8) {
                         ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                         cellButton.setIcon(tileIcon);
@@ -129,24 +132,23 @@ public class Maze extends JFrame {
                         cellButton.setIcon(tileIcon);
                     }
 
-                } else { // Inner cells
+                } else { 
                     String randomTile = tileImages[random.nextInt(tileImages.length)];
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + randomTile));
                     cellButton.setIcon(tileIcon);
 
-                    // Updated positions for player icons based on new positions
+                    // Player Icons
+                    String playerIconPath = null;
                     if ((row == 3 && col == 3) || (row == 3 && col == 5) || 
                         (row == 5 && col == 3) || (row == 5 && col == 5)) {
-
-                        String playerIconPath = null;
                         if (row == 3 && col == 3) {
-                            playerIconPath = "/naruto_assets/player1_icon.png"; // Player 1 new position
+                            playerIconPath = "/naruto_assets/player1_icon.png"; 
                         } else if (row == 3 && col == 5) {
-                            playerIconPath = "/naruto_assets/player2_icon.png"; // Player 2 new position
+                            playerIconPath = "/naruto_assets/player2_icon.png"; 
                         } else if (row == 5 && col == 3) {
-                            playerIconPath = "/naruto_assets/player3_icon.png"; // Player 3 new position
+                            playerIconPath = "/naruto_assets/player3_icon.png"; 
                         } else if (row == 5 && col == 5) {
-                            playerIconPath = "/naruto_assets/player4_icon.png"; // Player 4 new position
+                            playerIconPath = "/naruto_assets/player4_icon.png"; 
                         }
 
                         if (playerIconPath != null) {
@@ -157,6 +159,61 @@ public class Maze extends JFrame {
                             cellButton.setLayout(new BorderLayout());
                             JLabel playerLabel = new JLabel(resizedPlayerIcon);
                             cellButton.add(playerLabel, BorderLayout.CENTER);
+                        }
+                    } 
+
+                    // Coins - placing them in a square around player icons, avoiding player positions
+                    if (coinIndex < coinNumbers.length) {
+                        // Check all positions around Player 1 (row 3, col 3 and 5; row 5, col 3 and 5)
+                        if ((row == 2 && (col == 2 || col == 3 || col == 4)) || 
+                            (row == 3 && (col == 2 || col == 4)) || 
+                            (row == 4 && (col == 2 || col == 3 || col == 4))) {
+                            // Ensure no coin is placed where player icons are located
+                            if (!((row == 3 && col == 5) || (row == 5 && col == 3) || (row == 5 && col == 5))) {
+                                String coinPath = "/naruto_assets/gold_" + coinNumbers[coinIndex] + ".png"; 
+                                ImageIcon coinIcon = new ImageIcon(getClass().getResource(coinPath));
+                                Image resizedCoinImage = coinIcon.getImage().getScaledInstance(CELL_SIZE / 4, CELL_SIZE / 4, Image.SCALE_SMOOTH);
+                                JLabel coinLabel = new JLabel(new ImageIcon(resizedCoinImage));
+
+                                // Add a more significant offset to the right
+                                JPanel coinPanel = new JPanel();
+                                coinPanel.setLayout(new OverlayLayout(coinPanel));
+                                coinLabel.setPreferredSize(new Dimension(CELL_SIZE / 4, CELL_SIZE / 4));
+                                coinLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Align to the left
+                                coinPanel.add(coinLabel);
+                                coinPanel.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+                                coinPanel.setOpaque(false);
+                                coinPanel.setBounds(70, 0, CELL_SIZE / 4, CELL_SIZE / 4); // Increased bounds for a more noticeable right shift
+                                cellButton.add(coinPanel); // Add the coin panel on top of the button
+
+                                coinIndex++; // Increment the coin index
+                            }
+                        }
+
+                        // Check all positions around Player 2 (row 3, col 5; row 5, col 5)
+                        if ((row == 2 && (col == 4 || col == 5 || col == 6)) || 
+                            (row == 3 && (col == 4 || col == 6)) || 
+                            (row == 4 && (col == 4 || col == 5 || col == 6))) {
+                            // Ensure no coin is placed where player icons are located
+                            if (!((row == 3 && col == 3) || (row == 5 && col == 3))) {
+                                String coinPath = "/naruto_assets/gold_" + coinNumbers[coinIndex] + ".png"; 
+                                ImageIcon coinIcon = new ImageIcon(getClass().getResource(coinPath));
+                                Image resizedCoinImage = coinIcon.getImage().getScaledInstance(CELL_SIZE / 4, CELL_SIZE / 4, Image.SCALE_SMOOTH);
+                                JLabel coinLabel = new JLabel(new ImageIcon(resizedCoinImage));
+
+                                // Add a more significant offset to the right
+                                JPanel coinPanel = new JPanel();
+                                coinPanel.setLayout(new OverlayLayout(coinPanel));
+                                coinLabel.setPreferredSize(new Dimension(CELL_SIZE / 4, CELL_SIZE / 4));
+                                coinLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Align to the left
+                                coinPanel.add(coinLabel);
+                                coinPanel.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+                                coinPanel.setOpaque(false);
+                                coinPanel.setBounds(70, 0, CELL_SIZE / 4, CELL_SIZE / 4); // Increased bounds for a more noticeable right shift
+                                cellButton.add(coinPanel); // Add the coin panel on top of the button
+
+                                coinIndex++; // Increment the coin index
+                            }
                         }
                     }
                 }
@@ -173,29 +230,32 @@ public class Maze extends JFrame {
 
 
 
+
+    
+
     private JPanel createChatAreaPanel() {
         JPanel chatPanel = new JPanel(new BorderLayout());
         chatPanel.setPreferredSize(new Dimension(300, 600));
         chatPanel.setBorder(BorderFactory.createTitledBorder("Chatbox"));
 
-        // Create a JTextArea for the chat messages
+        // Creating a JTextArea for the chat messages
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
-        chatArea.setBackground(new Color(255, 204, 204)); // Slightly red background
-        chatArea.setForeground(Color.BLACK); // Change text color to black for better contrast
+        chatArea.setBackground(new Color(255, 204, 204)); 
+        chatArea.setForeground(Color.BLACK);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Create a JScrollPane for the JTextArea
+        // Creating a JScrollPane for the JTextArea
         JScrollPane scrollPane = new JScrollPane(chatArea);
         scrollPane.setPreferredSize(new Dimension(300, 500));
-        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Remove default border
+        scrollPane.setBorder(BorderFactory.createEmptyBorder()); 
 
         // Set the scroll pane's viewport border for rounded corners
-        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Adjust for padding
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); 
 
-        // Create a JTextField for input
+        // Creating a JTextField for input
         JTextField chatInput = new JTextField();
         chatInput.addActionListener(e -> {
             String message = chatInput.getText();
@@ -203,22 +263,17 @@ public class Maze extends JFrame {
                 String timestamp = java.time.LocalTime.now().toString().substring(0, 5);
                 chatArea.append(String.format("%s: %s [%s]%n", "Player", message, timestamp));
                 chatInput.setText("");
-                chatArea.setCaretPosition(chatArea.getDocument().getLength()); // Auto-scroll to the bottom
+                chatArea.setCaretPosition(chatArea.getDocument().getLength()); 
             }
         });
 
-        // Add components to the panel
+        // Adding components to the panel
         chatPanel.add(scrollPane, BorderLayout.CENTER);
         chatPanel.add(chatInput, BorderLayout.SOUTH);
 
         return chatPanel;
     }
-
-
-
-
-
-
+    
 
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
