@@ -178,31 +178,44 @@ public class Maze extends JFrame {
 
     private JPanel createChatAreaPanel() {
         JPanel chatPanel = new JPanel(new BorderLayout());
-        chatPanel.setPreferredSize(new Dimension(300, 600)); // Increased width of the chatbox
+        chatPanel.setPreferredSize(new Dimension(300, 600));
         chatPanel.setBorder(BorderFactory.createTitledBorder("Chatbox"));
 
+        // Create a JTextArea for the chat messages
         JTextArea chatArea = new JTextArea();
-        chatArea.setEditable(false); // Chat area is read-only
+        chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(chatArea);
-        scrollPane.setPreferredSize(new Dimension(300, 500)); // Set preferred size for the scroll pane
+        chatArea.setBackground(new Color(255, 204, 204)); // Slightly red background
+        chatArea.setForeground(Color.BLACK); // Change text color to black for better contrast
+        chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
+        // Create a JScrollPane for the JTextArea
+        JScrollPane scrollPane = new JScrollPane(chatArea);
+        scrollPane.setPreferredSize(new Dimension(300, 500));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Remove default border
+
+        // Set the scroll pane's viewport border for rounded corners
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Adjust for padding
+
+        // Create a JTextField for input
         JTextField chatInput = new JTextField();
         chatInput.addActionListener(e -> {
             String message = chatInput.getText();
             if (!message.isEmpty()) {
-                chatArea.append("Player: " + message + "\n");
-                chatInput.setText(""); // Clear the input field
+                String timestamp = java.time.LocalTime.now().toString().substring(0, 5);
+                chatArea.append(String.format("%s: %s [%s]%n", "Player", message, timestamp));
+                chatInput.setText("");
+                chatArea.setCaretPosition(chatArea.getDocument().getLength()); // Auto-scroll to the bottom
             }
         });
 
+        // Add components to the panel
         chatPanel.add(scrollPane, BorderLayout.CENTER);
         chatPanel.add(chatInput, BorderLayout.SOUTH);
 
         return chatPanel;
     }
-
 
 
 
