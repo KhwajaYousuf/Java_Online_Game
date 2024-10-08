@@ -111,15 +111,34 @@ public class Maze extends JFrame {
                     String randomTile = tileImages[random.nextInt(tileImages.length)];
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + randomTile));
                     cellButton.setIcon(tileIcon);
-                }
 
-                final String tileToLog = (cellButton.getIcon() != null) ? "tile" : "empty cell"; 
-                cellButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("Clicked on: " + tileToLog);
+                    // Updated positions for player icons based on new positions
+                    if ((row == 3 && col == 3) || (row == 3 && col == 5) || 
+                        (row == 5 && col == 3) || (row == 5 && col == 5)) {
+
+                        String playerIconPath = null;
+                        if (row == 3 && col == 3) {
+                            playerIconPath = "/naruto_assets/player1_icon.png"; // Player 1 new position
+                        } else if (row == 3 && col == 5) {
+                            playerIconPath = "/naruto_assets/player2_icon.png"; // Player 2 new position
+                        } else if (row == 5 && col == 3) {
+                            playerIconPath = "/naruto_assets/player3_icon.png"; // Player 3 new position
+                        } else if (row == 5 && col == 5) {
+                            playerIconPath = "/naruto_assets/player4_icon.png"; // Player 4 new position
+                        }
+
+                        if (playerIconPath != null) {
+                            ImageIcon playerIcon = new ImageIcon(getClass().getResource(playerIconPath));
+                            // Resize the icon to fit within the brick size
+                            Image resizedImage = playerIcon.getImage().getScaledInstance(CELL_SIZE / 2, CELL_SIZE / 2, Image.SCALE_SMOOTH);
+                            ImageIcon resizedPlayerIcon = new ImageIcon(resizedImage);
+
+                            cellButton.setLayout(new BorderLayout());
+                            JLabel playerLabel = new JLabel(resizedPlayerIcon);
+                            cellButton.add(playerLabel, BorderLayout.CENTER);
+                        }
                     }
-                });
+                }
 
                 gridPanel.add(cellButton);
             }
@@ -127,6 +146,8 @@ public class Maze extends JFrame {
         gridPanel.setOpaque(false);
         return gridPanel;
     }
+
+
 
 
     private JPanel createChatAreaPanel() {
