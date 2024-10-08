@@ -91,22 +91,47 @@ public class Maze extends JFrame {
                 cellButton.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
 
                 // Check if we are on the outer layer
-                if (row == 0) { // Top layer
-                    String imageToUse = (col % 2 == 0) ? "brick_full.png" : "insert_down.png";
-                    ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + imageToUse));
+                if ((row == 0 && (col == 0 || col == GRID_SIZE - 1)) || // Top-left and top-right corner
+                    (row == GRID_SIZE - 1 && (col == 0 || col == GRID_SIZE - 1))) { // Bottom-left and bottom-right corner
+                    ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
                     cellButton.setIcon(tileIcon);
-                } else if (row == GRID_SIZE - 1) { // Bottom layer
-                    String imageToUse = (col % 2 == 0) ? "brick_full.png" : "insert_up.png";
-                    ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + imageToUse));
-                    cellButton.setIcon(tileIcon);
-                } else if (col == 0) { // Left side
-                    String imageToUse = (row % 2 == 0) ? "brick_full.png" : "insert_right.png";
-                    ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + imageToUse));
-                    cellButton.setIcon(tileIcon);
-                } else if (col == GRID_SIZE - 1) { // Right side
-                    String imageToUse = (row % 2 == 0) ? "brick_full.png" : "insert_left.png";
-                    ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + imageToUse));
-                    cellButton.setIcon(tileIcon);
+
+                } else if (row == 0) { // Top edge
+                    if (col == 0 || col == 1 || col == 3 || col == 5 || col == 7 || col == 8) {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
+                        cellButton.setIcon(tileIcon);
+                    } else {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/insert_down.png"));
+                        cellButton.setIcon(tileIcon);
+                    }
+
+                } else if (row == GRID_SIZE - 1) { // Bottom edge
+                    if (col == 0 || col == 1 || col == 3 || col == 5 || col == 7 || col == 8) {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
+                        cellButton.setIcon(tileIcon);
+                    } else {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/insert_up.png"));
+                        cellButton.setIcon(tileIcon);
+                    }
+
+                } else if (col == 0) { // Left edge
+                    if (row == 0 || row == 1 || row == 3 || row == 5 || row == 7 || row == 8) {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
+                        cellButton.setIcon(tileIcon);
+                    } else {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/insert_right.png"));
+                        cellButton.setIcon(tileIcon);
+                    }
+
+                } else if (col == GRID_SIZE - 1) { // Right edge
+                    if (row == 0 || row == 1 || row == 3 || row == 5 || row == 7 || row == 8) {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
+                        cellButton.setIcon(tileIcon);
+                    } else {
+                        ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/insert_left.png"));
+                        cellButton.setIcon(tileIcon);
+                    }
+
                 } else { // Inner cells
                     String randomTile = tileImages[random.nextInt(tileImages.length)];
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + randomTile));
@@ -129,7 +154,6 @@ public class Maze extends JFrame {
 
                         if (playerIconPath != null) {
                             ImageIcon playerIcon = new ImageIcon(getClass().getResource(playerIconPath));
-                            // Resize the icon to fit within the brick size
                             Image resizedImage = playerIcon.getImage().getScaledInstance(CELL_SIZE / 2, CELL_SIZE / 2, Image.SCALE_SMOOTH);
                             ImageIcon resizedPlayerIcon = new ImageIcon(resizedImage);
 
@@ -146,6 +170,8 @@ public class Maze extends JFrame {
         gridPanel.setOpaque(false);
         return gridPanel;
     }
+
+
 
 
 
