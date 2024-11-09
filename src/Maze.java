@@ -2,26 +2,64 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-public class Maze extends JFrame {
 
-    private Image backgroundImage;
+/**
+ * Maze class that extends JFrame to create a maze game.
+ */
+public class Maze extends JFrame {
+	private static final long serialVersionUID = 1L;
+	private MazeController controller;
+    // Background and UI assets
+    /** Background image for the maze */
+	private Image backgroundImage;
+	
+    /** Logo image for the game */
     private Image gameLogo;
+    
+    /** Second Logo image for the game */
     private Image lostMazeImage;
+    
+    /** Font image for displaying game statistics */
     private Image gameStatsFont;
+    
+    /** Image for a scroll in the game */
     private Image finalScrollImage; 
+    
+    /** Font image for displaying scrolls */
     private Image scrollsFont; 
+    
+    /** Font image for displaying secrets */
     private Image secretFont; 
+    
+    /** Font image for collected items */
     private Image collectedFont; 
 
+    // Grid and UI settings
+    /** Size of the grid (number of cells) */
     private static final int GRID_SIZE = 9;
+    
+    /** Size of each cell in pixels */
     private static final int CELL_SIZE = 60;
 
+    /** Text field for player 1's name */
     private JTextField player1TextField;
+    
+    /** Text field for player 2's name */
     private JTextField player2TextField;
+    
+    /** Text field for player 3's name */
     private JTextField player3TextField;
+    
+    /** Text field for player 4's name */
     private JTextField player4TextField;
-    private final ImageIcon[] coinImages = new ImageIcon[20];
+    
+    private JMenuBar menuBar;
+    
+    
 
+
+    // Array of tile image paths
+    /** Array containing paths to tile images used in the maze */
     private final String[] tileImages = {
         "brick_SE.png",
         "brick_SW.png",
@@ -33,9 +71,15 @@ public class Maze extends JFrame {
         "brick_NW.png"
     };
 
-    public Maze() {
+    /**
+     * Maze constructor. Initializes the frame and sets up the maze.
+     */
+    public Maze(MazeController controller) {
         setupFrame();  
         loadAssets();  
+        this.controller = controller;
+        this.menuBar = createMenuBar();
+        setJMenuBar(createMenuBar());
         
         BackgroundPanel backgroundPanel = new BackgroundPanel();
         backgroundPanel.setLayout(new GridBagLayout()); 
@@ -47,7 +91,7 @@ public class Maze extends JFrame {
         // Adding chat area panel to the right side
         JPanel chatAreaPanel = createChatAreaPanel();
         
-        // Adding grid panel to background panel with adjusted constraints
+        // GridBag constraints for placing the grid and chat panel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; 
         gbc.gridy = 0; 
@@ -71,26 +115,57 @@ public class Maze extends JFrame {
         setVisible(true);
     }
 
+    
+    public void setController(MazeController controller) {
+        this.controller = controller;
+    }
 
+    /**
+     * Sets up the JFrame properties for the maze game.
+     */
     private void setupFrame() {
-        setTitle("Wizard's Maze");
+        setTitle("Lost Maze");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private JPanel createGridPanel() {
+    public JPanel createGridPanel() {
         JPanel gridPanel = new JPanel(new GridLayout(GRID_SIZE, GRID_SIZE));
-        int[] coinNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
-                             11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25};
         Random random = new Random();
-        int coinIndex = 0; // To index through the coinNumbers array
+
+        // Array of gold coin image paths
+        String[] coinImages = new String[] {
+            "gold_1.png", "gold_2.png", "gold_3.png", "gold_4.png", "gold_5.png",
+            "gold_6.png", "gold_7.png", "gold_8.png", "gold_9.png", "gold_10.png",
+            "gold_11.png", "gold_12.png", "gold_13.png", "gold_14.png", "gold_15.png",
+            "gold_16.png", "gold_17.png", "gold_18.png", "gold_19.png", "gold_20.png",
+            "gold_25.png"
+        };
+        
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 JButton cellButton = new JButton();
                 cellButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 cellButton.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+                cellButton.setLayout(new OverlayLayout(cellButton));
 
+                if ((row >= 2 && row <= 6) && (col >= 2 && col <= 6) && 
+                        !((row == 3 && col == 3) || (row == 3 && col == 5) || 
+                          (row == 5 && col == 3) || (row == 5 && col == 5))) {
+                        // Randomly assign a coin icon from the array to the button
+                        String randomCoinImage = coinImages[random.nextInt(coinImages.length)];
+                        ImageIcon coinIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + randomCoinImage)); // Use your coin image path here
+                        JButton coinButton = new JButton(coinIcon);
+                        coinButton.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+                        coinButton.setOpaque(false); // Ensure transparency
+                        coinButton.setContentAreaFilled(false); // Make sure background is transparent
+                        coinButton.setBorderPainted(false); // Remove border
+                        cellButton.add(coinButton);
+                        
+                    }
+                
+                // Corner and border cells logic
                 if ((row == 0 && (col == 0 || col == GRID_SIZE - 1)) || 
                     (row == GRID_SIZE - 1 && (col == 0 || col == GRID_SIZE - 1))) { 
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/brick_full.png"));
@@ -133,14 +208,20 @@ public class Maze extends JFrame {
                     }
 
                 } else { 
+                    // Create a JButton for the random tile
+                    JButton randomTileButton = new JButton();
                     String randomTile = tileImages[random.nextInt(tileImages.length)];
                     ImageIcon tileIcon = new ImageIcon(getClass().getResource("/naruto_assets/" + randomTile));
-                    cellButton.setIcon(tileIcon);
+                    randomTileButton.setIcon(tileIcon);
+                    randomTileButton.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
 
                     // Player Icons
                     String playerIconPath = null;
+                    JButton playerButton = new JButton(); // Create a JButton for the player
+
                     if ((row == 3 && col == 3) || (row == 3 && col == 5) || 
                         (row == 5 && col == 3) || (row == 5 && col == 5)) {
+                        
                         if (row == 3 && col == 3) {
                             playerIconPath = "/naruto_assets/player1_icon.png"; 
                         } else if (row == 3 && col == 5) {
@@ -156,70 +237,24 @@ public class Maze extends JFrame {
                             Image resizedImage = playerIcon.getImage().getScaledInstance(CELL_SIZE / 2, CELL_SIZE / 2, Image.SCALE_SMOOTH);
                             ImageIcon resizedPlayerIcon = new ImageIcon(resizedImage);
 
-                            cellButton.setLayout(new BorderLayout());
-                            JLabel playerLabel = new JLabel(resizedPlayerIcon);
-                            cellButton.add(playerLabel, BorderLayout.CENTER);
-                        }
-                    } 
+                            playerButton.setIcon(resizedPlayerIcon); // Set the icon directly on the button
+                            playerButton.setLayout(new BorderLayout());
+                            playerButton.setContentAreaFilled(false); // Optional: Make button background transparent
 
-                    // Coins - placing them in a square around player icons, avoiding player positions
-                    if (coinIndex < coinNumbers.length) {
-                        // Check all positions around Player 1 (row 3, col 3 and 5; row 5, col 3 and 5)
-                        if ((row == 2 && (col == 2 || col == 3 || col == 4)) || 
-                            (row == 3 && (col == 2 || col == 4)) || 
-                            (row == 4 && (col == 2 || col == 3 || col == 4))) {
-                            // Ensure no coin is placed where player icons are located
-                            if (!((row == 3 && col == 5) || (row == 5 && col == 3) || (row == 5 && col == 5))) {
-                                String coinPath = "/naruto_assets/gold_" + coinNumbers[coinIndex] + ".png"; 
-                                ImageIcon coinIcon = new ImageIcon(getClass().getResource(coinPath));
-                                Image resizedCoinImage = coinIcon.getImage().getScaledInstance(CELL_SIZE / 4, CELL_SIZE / 4, Image.SCALE_SMOOTH);
-                                JLabel coinLabel = new JLabel(new ImageIcon(resizedCoinImage));
-
-                                // Add a more significant offset to the right
-                                JPanel coinPanel = new JPanel();
-                                coinPanel.setLayout(new OverlayLayout(coinPanel));
-                                coinLabel.setPreferredSize(new Dimension(CELL_SIZE / 4, CELL_SIZE / 4));
-                                coinLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Align to the left
-                                coinPanel.add(coinLabel);
-                                coinPanel.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
-                                coinPanel.setOpaque(false);
-                                coinPanel.setBounds(70, 0, CELL_SIZE / 4, CELL_SIZE / 4); // Increased bounds for a more noticeable right shift
-                                cellButton.add(coinPanel); // Add the coin panel on top of the button
-
-                                coinIndex++; // Increment the coin index
-                            }
-                        }
-
-                        // Check all positions around Player 2 (row 3, col 5; row 5, col 5)
-                        if ((row == 2 && (col == 4 || col == 5 || col == 6)) || 
-                            (row == 3 && (col == 4 || col == 6)) || 
-                            (row == 4 && (col == 4 || col == 5 || col == 6))) {
-                            // Ensure no coin is placed where player icons are located
-                            if (!((row == 3 && col == 3) || (row == 5 && col == 3))) {
-                                String coinPath = "/naruto_assets/gold_" + coinNumbers[coinIndex] + ".png"; 
-                                ImageIcon coinIcon = new ImageIcon(getClass().getResource(coinPath));
-                                Image resizedCoinImage = coinIcon.getImage().getScaledInstance(CELL_SIZE / 4, CELL_SIZE / 4, Image.SCALE_SMOOTH);
-                                JLabel coinLabel = new JLabel(new ImageIcon(resizedCoinImage));
-
-                                // Add a more significant offset to the right
-                                JPanel coinPanel = new JPanel();
-                                coinPanel.setLayout(new OverlayLayout(coinPanel));
-                                coinLabel.setPreferredSize(new Dimension(CELL_SIZE / 4, CELL_SIZE / 4));
-                                coinLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Align to the left
-                                coinPanel.add(coinLabel);
-                                coinPanel.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
-                                coinPanel.setOpaque(false);
-                                coinPanel.setBounds(70, 0, CELL_SIZE / 4, CELL_SIZE / 4); // Increased bounds for a more noticeable right shift
-                                cellButton.add(coinPanel); // Add the coin panel on top of the button
-
-                                coinIndex++; // Increment the coin index
-                            }
+                            // Assuming randomTileButton is the container where you want to add the player button
+                            randomTileButton.add(playerButton, BorderLayout.CENTER);
+                            
                         }
                     }
+
                     
-                    		
+                    // Add the random tile button to the cellButton
+                    cellButton.add(randomTileButton);
+                    cellButton.setLayout(new OverlayLayout(cellButton)); // Allow layering
                 }
 
+                // Add coins only in a 5x5 grid, skipping player icon locations
+                
                 gridPanel.add(cellButton);
             }
         }
@@ -227,20 +262,19 @@ public class Maze extends JFrame {
         return gridPanel;
     }
 
-
-
-
-
-
-
     
 
+
+    /**
+     * Creates the chat area panel with player text fields.
+     *
+     * @return JPanel the panel for the chat area.
+     */
     private JPanel createChatAreaPanel() {
         JPanel chatPanel = new JPanel(new BorderLayout());
         chatPanel.setPreferredSize(new Dimension(300, 600));
         chatPanel.setBorder(BorderFactory.createTitledBorder("Chatbox"));
 
-        // Creating a JTextArea for the chat messages
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
@@ -249,15 +283,12 @@ public class Maze extends JFrame {
         chatArea.setForeground(Color.BLACK);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Creating a JScrollPane for the JTextArea
         JScrollPane scrollPane = new JScrollPane(chatArea);
         scrollPane.setPreferredSize(new Dimension(300, 500));
         scrollPane.setBorder(BorderFactory.createEmptyBorder()); 
 
-        // Set the scroll pane's viewport border for rounded corners
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); 
 
-        // Creating a JTextField for input
         JTextField chatInput = new JTextField();
         chatInput.addActionListener(e -> {
             String message = chatInput.getText();
@@ -269,7 +300,6 @@ public class Maze extends JFrame {
             }
         });
 
-        // Adding components to the panel
         chatPanel.add(scrollPane, BorderLayout.CENTER);
         chatPanel.add(chatInput, BorderLayout.SOUTH);
 
@@ -277,27 +307,59 @@ public class Maze extends JFrame {
     }
     
 
+    /**
+     * Creates the menu bar for the game.
+     *
+     * @return JMenuBar the menu bar.
+     */
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
+        
+        // Settings menu
         JMenu fileMenu1 = new JMenu("Settings");
         JMenuItem settingsItem1 = new JMenuItem("Save Game");
+        settingsItem1.addActionListener(e -> controller.handleSaveGame());
         JMenuItem settingsItem2 = new JMenuItem("Restart Game");
+        settingsItem2.addActionListener(e -> controller.handleRestartGame());
         JMenuItem settingsItem3 = new JMenuItem("Toggle Music");
+        settingsItem3.addActionListener(e -> controller.handleToggleMusic());
         fileMenu1.add(settingsItem1);
         fileMenu1.add(settingsItem2);
         fileMenu1.add(settingsItem3);
+        
+        // Change Language menu
         JMenu fileMenu2 = new JMenu("Change Language");
+        
+        // Network menu
         JMenu fileMenu3 = new JMenu("Network");
+        
+        // Help menu
         JMenu fileMenu4 = new JMenu("Help");
+        JMenuItem helpItem = new JMenuItem("Show Help");
+        helpItem.addActionListener(e -> controller.handleShowHelp()); // This calls the controller to show help
+        fileMenu4.add(helpItem);
+        
+        // Insert Tile menu
         JMenu fileMenu5 = new JMenu("INSERT TILE");
+        
+        // Add all menus to the menu bar
         menuBar.add(fileMenu1);
         menuBar.add(fileMenu2);
         menuBar.add(fileMenu3);
-        menuBar.add(fileMenu4);
+        menuBar.add(fileMenu4); // Help menu with the "Show Help" item
         menuBar.add(fileMenu5);
+        
         return menuBar;
     }
 
+    
+    public JMenuBar getJMenuBarComponent() {
+        return this.menuBar;
+    }
+
+    /**
+     * Loads assets like images for the game.
+     */
     private void loadAssets() {
         backgroundImage = new ImageIcon(getClass().getResource("/naruto_assets/game_bg.png")).getImage();
         gameLogo = new ImageIcon(getClass().getResource("/naruto_assets/game_logo-removebg-preview.png")).getImage();
@@ -309,8 +371,13 @@ public class Maze extends JFrame {
         collectedFont = new ImageIcon(getClass().getResource("/naruto_assets/collected_font.png")).getImage();
     }
 
+    /**
+     * Background panel class to draw the game background.
+     */
     private class BackgroundPanel extends JPanel {
-        @Override
+		private static final long serialVersionUID = 1L;
+
+		@Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
@@ -318,6 +385,13 @@ public class Maze extends JFrame {
         }
     }
 
+    /**
+     * Draws images onto the game panel.
+     * This method uses the provided Graphics object to render images like 
+     * the game logo, lost maze stats, and other game assets on the screen.
+     *
+     * @param g the Graphics object used to draw the images on the panel.
+     */
     private void drawImages(Graphics g) {
         int logoX = 3; 
         int logoY = 0; 
@@ -353,6 +427,10 @@ public class Maze extends JFrame {
         g.drawImage(collectedFont, scrollsFontX, collectedFontY, 100, 30, this); 
     }
 
+    /**
+     * Creates a player text field.
+     *
+     */
     private void setupPlayerTextFields() {
         player1TextField = new JTextField(15);
         player2TextField = new JTextField(15);
@@ -360,10 +438,30 @@ public class Maze extends JFrame {
         player4TextField = new JTextField(15);
     }
 
+
+    /**
+     * Main method to start the Maze game.
+     *
+     * @param args command line arguments.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Maze ui = new Maze();
-            ui.setupPlayerTextFields(); 
+            // Create the model first
+            
+            // Create the view (Maze UI) by passing null for the controller for now
+            Maze ui = new Maze(null);  // Temporarily pass null, we'll set the controller later
+            MazeModel model = new MazeModel(ui); // Initialize the model
+
+            // Create the controller, now that the view is initialized
+            MazeController controller = new MazeController(model, ui);
+            
+            // Set the controller in the view
+            ui.setController(controller);  // Set the controller reference in the view
+            
+            // Set up additional UI elements
+            ui.setupPlayerTextFields();  // Assuming this method exists in Maze class
+            
+            // Make the view visible after everything is set up
             ui.setVisible(true);
         });
     }
